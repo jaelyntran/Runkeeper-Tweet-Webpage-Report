@@ -57,16 +57,34 @@ class Tweet {
         if (this.source != 'completed_event') {
             return "unknown";
         }
-        //TODO: parse the activity type from the text of the tweet
-        return "";
+        else {
+            const activityRegex = /\b(run|walk|bike|hike|swim|meditation|yoga|workout|row|skate|dance|pilates|boxing|snowboard)\b/i;
+            const match = this.text.match(activityRegex);
+            return match ? match[0] : "other activities";
+        }
     }
 
     get distance():number {
         if(this.source != 'completed_event') {
             return 0;
+        } else {
+            let miConversion = true;
+            let kmToMi = 1.609;
+
+            let startIdx = this.text.indexOf("a");
+            let endIdx = this.text.indexOf("km");
+            if (endIdx == -1) {
+                endIdx = this.text.indexOf("mi");
+                miConversion = false;
+            }
+            let distance = this.text.substring(startIdx + 2, endIdx - 1);
+
+            let numDistance = Number(distance);
+            if (miConversion) {
+                numDistance = numDistance * kmToMi;
+            }
+            return numDistance ? numDistance : 0;
         }
-        //TODO: prase the distance from the text of the tweet
-        return 0;
     }
 
     getHTMLTableRow(rowNumber:number):string {
