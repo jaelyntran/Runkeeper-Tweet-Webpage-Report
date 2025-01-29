@@ -5,11 +5,38 @@ function parseTweets(runkeeper_tweets) {
 		return;
 	}
 
-	//TODO: Filter to just the written tweets
+	let tweet_array = runkeeper_tweets.map(function(tweet) {
+		return new Tweet(tweet.text, tweet.created_at);
+	});
+	window.writtenTweets = tweet_array.filter(tweet => tweet.written);
+	console.log(window.writtenTweets.length);
 }
 
 function addEventHandlerForSearch() {
-	//TODO: Search the written tweets as text is entered into the search box, and add them to the table
+	const textFilter = document.getElementById("textFilter");
+	let debounceTimeout;
+	textFilter.addEventListener("input", function(e) {
+		clearTimeout(debounceTimeout);
+		debounceTimeout = setTimeout(function() {
+			const input = textFilter.value.toLowerCase();
+			let searchCount = 0;
+			let rows = "";
+			window.writtenTweets.forEach(tweet => {
+				let text = tweet.writtenText;
+				if(text.toLowerCase().includes(input)) {
+					searchCount++;
+					const thisRow = tweet.getHTMLTableRow(searchCount, tweet.activityType, tweet.text);
+					rows += thisRow;
+				}
+			})
+
+			const tweetTable = document.getElementById("tweetTable");
+			tweetTable.innerHTML = rows;
+			document.getElementById("searchCount").innerText = searchCount.toString();
+			document.getElementById("searchText").innerText = input;
+		}, 300);
+	});
+
 }
 
 //Wait for the DOM to load

@@ -7,9 +7,7 @@ class Tweet {
 		this.time = new Date(tweet_time);//, "ddd MMM D HH:mm:ss Z YYYY"
 	}
 
-	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {
-        //Identify whether the source is a live event, an achievement, a completed event, or miscellaneous.
         const curr_text = this.text.toLowerCase();
 
         if(curr_text.startsWith("just completed") || curr_text.startsWith("just posted")) {
@@ -26,7 +24,6 @@ class Tweet {
         }
     }
 
-    //returns a boolean, whether the text includes any content written by the person tweeting.
     get written():boolean {
         //TODO: identify whether the tweet is written
         const curr_text = this.text.toLowerCase();
@@ -87,8 +84,17 @@ class Tweet {
         }
     }
 
-    getHTMLTableRow(rowNumber:number):string {
+    getHTMLTableRow(rowNumber:number, activityType: string, text: string):string {
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const linkedText = text.replace(urlRegex, function(url) {
+            return `<a href="${url}" target="_blank">${url}</a>`;
+        });
+
+        return "<tr>" +
+            "<td>" + rowNumber.toString() + "</td>" +
+            "<td>" + activityType + "</td>" +
+            "<td>" + linkedText + "</td>" +
+            "</tr>";
     }
 }
